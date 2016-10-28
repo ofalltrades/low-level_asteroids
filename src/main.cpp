@@ -37,8 +37,6 @@ global_var real32 shipScalars[10] = {  0.0f,  15.0f,    // nose
                                       -6.0f, -10.0f,    // left base scalar
                                        6.0f, -10.0f };  // right base scalar
 
-global_var int32 shipScalarsMemPosCache[10] = {};
-
 global_var struct {
   const int32 width              = 640;
   const int32 height             = 480;
@@ -136,19 +134,6 @@ internal void drawLine( int32    x1,
   }
 }
 
-internal void eraseObj( int32 *  scalars,
-                        uint32 * pixels_ptr,
-                        uint32   color ) {
-  for ( int32 i = 0; i < 10; i += 2 ) {
-    drawLine( scalars[i],
-              scalars[i + 1],
-              scalars[i + 2],
-              scalars[i + 3],
-              pixels_ptr,
-              MAGENTA );
-  }
-}
-
 // 'scalars' is of the form [X0, Y0, X1, Y1, ... Xn, Yn].
 internal void rotateScalarsLeft( real32 * scalars, real32 rad ) {
   real32 prevX;
@@ -191,43 +176,32 @@ internal void rotateScalarsLeft( real32 * scalars, real32 rad ) {
 
 /*}*/
 
-internal void drawShip( int32 x, int32 y, uint32 * pixels_ptr ) {
-  shipScalarsMemPosCache[0] = x + ( int32 )shipScalars[0];
-  shipScalarsMemPosCache[1] = y - ( int32 )shipScalars[1];
-  shipScalarsMemPosCache[2] = x + ( int32 )shipScalars[2];
-  shipScalarsMemPosCache[3] = y - ( int32 )shipScalars[3];
-  shipScalarsMemPosCache[4] = x + ( int32 )shipScalars[4];
-  shipScalarsMemPosCache[5] = y - ( int32 )shipScalars[5];
-  shipScalarsMemPosCache[6] = x + ( int32 )shipScalars[6];
-  shipScalarsMemPosCache[7] = y + ( int32 )abs( shipScalars[7] );
-  shipScalarsMemPosCache[8] = x + ( int32 )shipScalars[8];
-  shipScalarsMemPosCache[9] = y + ( int32 )abs( shipScalars[9] );
-
+internal void drawShip( int32 x, int32 y, uint32 * pixels_ptr, uint32 color ) {
   // Left side
-  drawLine( shipScalarsMemPosCache[0],       // nose X pos
-            shipScalarsMemPosCache[1],       // nose Y pos
-            shipScalarsMemPosCache[2],       // left wing tip X pos
-            shipScalarsMemPosCache[3],       // left wing tip Y pos
+  drawLine( x + ( int32 )shipScalars[0],       // nose X pos
+            y - ( int32 )shipScalars[1],       // nose Y pos
+            x + ( int32 )shipScalars[2],       // left wing tip X pos
+            y - ( int32 )shipScalars[3],       // left wing tip Y pos
             pixels_ptr,
-            WHITE );
+            color );
 
   // Right side
-  drawLine( shipScalarsMemPosCache[0],       // nose X pos
-            shipScalarsMemPosCache[1],       // nose Y pos
-            shipScalarsMemPosCache[4],       // right wing tip X pos
-            shipScalarsMemPosCache[5],       // right wing tip Y pos
+  drawLine( x + ( int32 )shipScalars[0],       // nose X pos
+            y - ( int32 )shipScalars[1],       // nose Y pos
+            x + ( int32 )shipScalars[4],       // right wing tip X pos
+            y - ( int32 )shipScalars[5],       // right wing tip Y pos
             pixels_ptr,
-            WHITE );
+            color );
 
   // Base
   // Use absolute value here to translate Cartesian coordinates
   //   into right-handed Cartesian.
-  drawLine( shipScalarsMemPosCache[6],           // left base X pos
-            shipScalarsMemPosCache[7],    // left base Y pos
-            shipScalarsMemPosCache[8],           // right base X pos
-            shipScalarsMemPosCache[9],    // right base Y pos
+  drawLine( x + ( int32 )shipScalars[6],           // left base X pos
+            y + ( int32 )abs( shipScalars[7] ),    // left base Y pos
+            x + ( int32 )shipScalars[8],           // right base X pos
+            y + ( int32 )abs( shipScalars[9]),    // right base Y pos
             pixels_ptr,
-            WHITE );
+            color );
 }
 
 int32 main() {
@@ -236,12 +210,13 @@ int32 main() {
   //convertToScreenCoordinates( 100, 100, shipScalars );
 
   // Testing ship rotation
-  drawShip( 50, 50, screenBuffer_ptr );
-  eraseObj( shipScalarsMemPosCache, screenBuffer_ptr, MAGENTA );
+  drawShip( 50, 50, screenBuffer_ptr, WHITE );
+  drawShip( 50, 50, screenBuffer_ptr, MAGENTA );
 
   for ( int32 i = 0; i < 1; ++i ) {
     rotateScalarsLeft( shipScalars, rad );
-    drawShip( 50, 50, screenBuffer_ptr );
+    drawShip( 50, 50, screenBuffer_ptr, WHITE );
+    drawShip( 50, 50, screenBuffer_ptr, BLACK );
   }
 
   SDL_Window *  window = 0;
