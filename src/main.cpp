@@ -49,7 +49,10 @@ global_var struct {
   const int32 bufferSizeInBytes  = bufferSize * 4;
 } screenData;
 
-uint32 *
+
+// I'm using calloc here rather than mmap or vm_allocate because
+//   it is only called once and is more portable. (Is this true?)
+global_var uint32 *
 screenBuffer_ptr = ( uint32 * )calloc( ( screenData.width * screenData.height ),
                                        screenData.bufferSizeInBytes );
 
