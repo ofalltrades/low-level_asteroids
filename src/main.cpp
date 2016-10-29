@@ -48,48 +48,13 @@ uint32 *
 screenBuffer_ptr = ( uint32 * )calloc( ( screenData.width * screenData.height ),
                                        screenData.bufferSizeInBytes );
 
-/*internal int32 abs( int32 val ) {*/
-  //printf("asdf");
-  //return val < 0.0f ? -val : val;
-/*}*/
-
-/*internal int32 factorial( int32 n ) {*/
-  //if ( n == 0 ) return 0;
-
-  //for ( int32 x = n - 1; x > 0; x-- ) {
-    //n *= x;
-  //}
-
-  //return n;
-/*}*/
-
-/*internal int32 pow( real32 n, int32 exp ) {*/
-  //real32 result = n;
-
-  //for ( int32 x = 0; x < exp - 1; ++x  ) {
-    //result *= n;
-  //}
-
-  //return result;
-/*}*/
-
 internal void
 convertToScreenCoordinates( int32 x, int32 y, real32 * scalars ) {
   for ( int32 i = 0; i < 10; i += 2 ) {
     scalars[i + 1] =  -scalars[i + 1]; // Invert Y
     scalars[i]     += x;
-    scalars[i + 1] -=  y;
+    scalars[i + 1] -= y;
   }
-  printf("%f  ", scalars[0]);
-  printf("%f\n", scalars[1]);
-  printf("%f  ", scalars[2]);
-  printf("%f\n", scalars[3]);
-  printf("%f  ", scalars[4]);
-  printf("%f\n", scalars[5]);
-  printf("%f  ", scalars[6]);
-  printf("%f\n", scalars[7]);
-  printf("%f  ", scalars[8]);
-  printf("%f\n", scalars[9]);
 }
 
 internal void plotPixel( int32    x,
@@ -147,34 +112,6 @@ internal void rotateScalarsLeft( real32 * scalars, real32 rad ) {
     scalars[yIdx] = ( prevX * sin( rad ) ) + ( scalars[yIdx] * cos( rad ) );
   }
 }
-
-/*internal real32 sin( real32 n ) {*/
-  //real32 num  = pow( n, 3 ) / ( real32 )factorial( 3 );
-  //real32  sign = 1.0f;
-
-  //for ( int32 x = 5; x <= 55; x += 2 ) {
-    //num += sign * (pow( n, x ) / ( real32 )factorial( x ));
-    //sign = -sign;
-  //}
-
-  //return n - num;
-//}
-
-//internal real32 cos( real32 rad ) {
-  //return 0;
-//}
-
-//internal real32 tan( real32 rad ) {
-  //return 0;
-/*}*/
-
-/*internal real32 calcRotation( int32 direction ) {*/
-
-/*}*/
-
-/*internal void rotateObj( obj ) {*/
-
-/*}*/
 
 internal void drawShip( int32 x, int32 y, uint32 * pixels_ptr, uint32 color ) {
   // Left side
