@@ -1,3 +1,8 @@
+/*
+ * TODO: - Fill out this todo list
+ *       - Put my math function back and get rid of math.h
+ */
+
 #include <SDL2/SDL.h>
 #include <math.h>
 
