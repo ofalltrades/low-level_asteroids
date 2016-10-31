@@ -19,6 +19,6 @@ typedef   unsigned long long  u64;
 typedef   float               r32;
 typedef   double              r64;
 
-typedef   int                 bool;
+typedef   int                 bool32;
 
 #endif

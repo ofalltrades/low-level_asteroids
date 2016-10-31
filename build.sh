@@ -1,5 +1,7 @@
 #!/bin/bash
 
+reset
+
 clang++ src/main.cpp -o build/Release/low-level_asteroids \
         -I/Library/Frameworks/SDL2.framework/Headers \
         -F/Library/Frameworks -framework SDL2 \

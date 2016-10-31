@@ -6,6 +6,7 @@
 #include <SDL2/SDL.h>
 #include <math.h>         // Remove after implementing sine
 #include "commonplace.h"
+#include "commonlib.h"
 
 #define PI32 = 3.14159265359
 
@@ -21,11 +22,11 @@
 //
 // Note: The above measurements should only be relied on with respect
 //       to this initial state
-global_var r32 shipScalars[10] = {  0.0f,  15.0f,    // nose
-                                   -9.0f, -15.0f,    // left wing tip
-                                    9.0f, -15.0f,    // right wing tip
-                                   -6.0f, -10.0f,    // left base scalar
-                                    6.0f, -10.0f };  // right base scalar
+global_var r32 shipPoints[10] = {  0.0f,  15.0f,    // nose
+                                  -9.0f, -15.0f,    // left wing tip
+                                   9.0f, -15.0f,    // right wing tip
+                                  -6.0f, -10.0f,    // left base coordinate
+                                   6.0f, -10.0f };  // right base coordinate
 
 global_var struct {
   const i32 width              = 640;
@@ -42,11 +43,11 @@ screenBuffer_ptr = ( u32 * )calloc( ( screenData.width * screenData.height ),
                                       screenData.bufferSizeInBytes );
 
 internal void
-convertToScreenCoordinates( i32 x, i32 y, r32 * scalars ) {
+convertToScreenCoordinates( i32 x, i32 y, r32 * points ) {
   for ( i32 i = 0; i < 10; i += 2 ) {
-    scalars[i + 1] =  -scalars[i + 1]; // Invert Y
-    scalars[i]     += x;
-    scalars[i + 1] -= y;
+    points[i + 1] =  -points[i + 1];     // invert Y
+    points[i]     += x;
+    points[i + 1] += y;
   }
 }
 
@@ -92,44 +93,44 @@ internal void drawLine( i32    x1,
   }
 }
 
-// 'scalars' is of the form [X0, Y0, X1, Y1, ... Xn, Yn].
-internal void rotateScalarsLeft( r32 * scalars, r32 rad ) {
+// 'points' is of the form [X0, Y0, X1, Y1, ... Xn, Yn].
+internal void rotatePointsLeft( r32 * points, r32 rad ) {
   r32 prevX;
   i32 yIdx;
 
   for ( i32 x = 0; x < 10; x += 2 ) {
-    prevX = scalars[x];
+    prevX = points[x];
     yIdx = x + 1;
 
-    scalars[x]    = ( prevX * cos( rad ) ) - ( scalars[yIdx] * sin( rad ) );
-    scalars[yIdx] = ( prevX * sin( rad ) ) + ( scalars[yIdx] * cos( rad ) );
+    points[x]    = ( prevX * cos( rad ) ) - ( points[yIdx] * sin( rad ) );
+    points[yIdx] = ( prevX * sin( rad ) ) + ( points[yIdx] * cos( rad ) );
   }
 }
 
 internal void drawShip( i32 x, i32 y, u32 * pixels_ptr, u32 color ) {
   // Left side
-  drawLine( x + ( i32 )shipScalars[0],       // nose X pos
-            y - ( i32 )shipScalars[1],       // nose Y pos
-            x + ( i32 )shipScalars[2],       // left wing tip X pos
-            y - ( i32 )shipScalars[3],       // left wing tip Y pos
+  drawLine( x + ( i32 )shipPoints[0],       // nose X pos
+            y - ( i32 )shipPoints[1],       // nose Y pos
+            x + ( i32 )shipPoints[2],       // left wing tip X pos
+            y - ( i32 )shipPoints[3],       // left wing tip Y pos
             pixels_ptr,
             color );
 
   // Right side
-  drawLine( x + ( i32 )shipScalars[0],       // nose X pos
-            y - ( i32 )shipScalars[1],       // nose Y pos
-            x + ( i32 )shipScalars[4],       // right wing tip X pos
-            y - ( i32 )shipScalars[5],       // right wing tip Y pos
+  drawLine( x + ( i32 )shipPoints[0],       // nose X pos
+            y - ( i32 )shipPoints[1],       // nose Y pos
+            x + ( i32 )shipPoints[4],       // right wing tip X pos
+            y - ( i32 )shipPoints[5],       // right wing tip Y pos
             pixels_ptr,
             color );
 
   // Base
   // Use absolute value here to translate Cartesian coordinates
   //   into right-handed Cartesian.
-  drawLine( x + ( i32 )shipScalars[6],           // left base X pos
-            y + ( i32 )abs( shipScalars[7] ),    // left base Y pos
-            x + ( i32 )shipScalars[8],           // right base X pos
-            y + ( i32 )abs( shipScalars[9]),     // right base Y pos
+  drawLine( x + ( i32 )shipPoints[6],           // left base X pos
+            y + ( i32 )abs( shipPoints[7] ),    // left base Y pos
+            x + ( i32 )shipPoints[8],           // right base X pos
+            y + ( i32 )abs( shipPoints[9]),     // right base Y pos
             pixels_ptr,
             color );
 }
@@ -141,14 +142,14 @@ void gameUpdateAndRender() {
 i32 main() {
   r32 rad = 0.7f;
 
-  //convertToScreenCoordinates( 100, 100, shipScalars );
+  //convertToScreenCoordinates( 100, 100, shipPoints );
 
   // Testing ship rotation
   drawShip( 50, 50, screenBuffer_ptr, WHITE );
   drawShip( 50, 50, screenBuffer_ptr, MAGENTA );
 
   for ( i32 i = 0; i < 1; ++i ) {
-    rotateScalarsLeft( shipScalars, rad );
+    rotatePointsLeft( shipPoints, rad );
     drawShip( 50, 50, screenBuffer_ptr, WHITE );
     drawShip( 50, 50, screenBuffer_ptr, BLACK );
   }
